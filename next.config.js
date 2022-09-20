@@ -1,7 +1,13 @@
 const path = require('path');
-const { withSentryConfig } = require('@sentry/nextjs');
+const {withSentryConfig} = require('@sentry/nextjs');
 
-const nextConfig = {
+const withTM = require('next-transpile-modules')([
+  '@mui/material',
+  '@mui/system',
+  '@mui/icons-material',
+]);
+
+const nextConfig = withTM({
   reactStrictMode: true,
   swcMinify: true,
   distDir: 'build',
@@ -17,9 +23,10 @@ const nextConfig = {
   webpack: config => {
     config.resolve.alias['@'] = path.join(__dirname, 'src');
     config.resolve.alias['@assets'] = path.join(__dirname, 'public/assets');
+    config.resolve.alias['@mui/styled-engine'] = '@mui/styled-engine-sc';
     return config;
   },
-};
+});
 
 const sentryWebpackPluginOptions = {
   silent: true,
